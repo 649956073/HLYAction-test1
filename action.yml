@@ -1,0 +1,42 @@
+name: 'HLY Test Action'
+description: 'A test GitHub Action for demonstration'
+author: 'Huliangyi'
+
+inputs:
+  message:
+    description: 'Message to display'
+    required: false
+    default: 'Hello from HLY Action!'
+  
+  count:
+    description: 'Number of times to repeat the message'
+    required: false
+    default: '1'
+
+outputs:
+  result:
+    description: 'The processed result'
+  
+  timestamp:
+    description: 'When the action was executed'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Execute Action
+      id: execute
+      shell: bash
+      run: |
+        echo "🚀 HLY Action is running..."
+        MESSAGE="${{ inputs.message }}"
+        COUNT="${{ inputs.count }}"
+        
+        for ((i=1; i<=COUNT; i++)); do
+          echo "[$i] $MESSAGE"
+        done
+        
+        TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        
+        echo "result=$MESSAGE (repeated $COUNT times)" >> $GITHUB_OUTPUT
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "✅ Action completed successfully"
