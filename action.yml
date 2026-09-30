@@ -2,6 +2,10 @@ name: 'HLY Test Action'
 description: 'A test GitHub Action for demonstration'
 author: 'Huliangyi'
 
+branding:
+  icon: 'zap'
+  color: 'blue'
+
 inputs:
   message:
     description: 'Message to display'
