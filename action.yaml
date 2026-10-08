@@ -1,0 +1,84 @@
+# ============================================================
+# Action 元数据文件（发布到 Marketplace 的必要条件，须位于仓库根目录）
+# 文件名：action.yml（或 action.yaml，二者等价）
+# ============================================================
+
+# 【name】Action 名称（必填）
+# - 使用方在 workflow 中通过 uses: <owner>/<repo>@<tag> 引用本 Action
+# - 发布到 Marketplace 时做全局唯一校验：不得与已有 Action 名称 / 用户名 / 组织名重复
+name: 'HLY Test Action'
+
+# 【description】一句话描述（必填，≤125 字符）
+# - 展示在 Marketplace 列表卡片与详情页「关于」区块
+description: 'A test GitHub Action for demonstration'
+
+# 【author】作者（可选）
+# - 展示在 Marketplace 详情页，标注 Action 的编写者
+author: 'Huliangyi'
+
+# 【branding】品牌视觉区（仅发布到 Marketplace 后生效，建议项）
+# - 不发布到 Marketplace 时该区块不起任何作用
+# - 发布时缺失仅产生告警（不阻断）；展示时以平台默认图标/颜色兜底
+branding:
+  # 【icon】图标名：从平台预置图标列表中选择（如 zap、rocket、heart…）
+  icon: 'zap'
+  # 【color】颜色名：从平台预置颜色列表中选择（如 blue、green、red…）
+  color: 'blue'
+
+# 【inputs】输入参数区（可选）
+# - 使用方在 workflow 中通过 with: 传入；脚本内用 ${{ inputs.xxx }} 读取
+inputs:
+  # 【message】输入参数名（使用方在 with: 中写的键名）
+  message:
+    description: 'Message to display'  # 参数说明，供使用者理解该参数用途
+    required: false                    # 是否必填：false = 可省略
+    default: 'Hello from HLY Action!'  # 省略时使用的默认值（required: false 时才有意义）
+
+  # 【count】第二个输入参数：消息重复次数
+  count:
+    description: 'Number of times to repeat the message'
+    required: false
+    default: '1'
+
+# 【outputs】输出参数区（可选）
+# - 声明本 Action 会产出的结果，供下游 step / job 通过 steps.<step-id>.outputs.xxx 引用
+# - 注意：输出的【值】不在这里赋，而是运行时由脚本写入 $GITHUB_OUTPUT 产生（见下方 run 块）
+outputs:
+  result:
+    description: 'The processed result'    # 输出说明：处理结果
+  timestamp:
+    description: 'When the action was executed'  # 输出说明：执行时间戳
+
+# 【runs】运行定义区（必填）：声明这个 Action 如何执行
+runs:
+  # 【using】运行类型，共三种取值：
+  #   - node20 / node24：Node.js 脚本实现（配合 main: 指定入口 js 文件）
+  #   - docker：Docker 容器运行（环境隔离好，但仅 Linux、启动较慢）
+  #   - composite：组合多个 shell 步骤（本例）——轻量，直接复用当前 runner 环境
+  using: 'composite'
+  # 【steps】组合步骤列表：按顺序执行，整体对外表现为一个 Action
+  steps:
+    - name: Execute Action   # 步骤名称
+      id: execute            # 步骤 id：下游通过 steps.execute.outputs.result 引用本步输凶
+      shell: bash            # composite 步骤必填：声明该步骤使用的 shell
+      run: |
+        # ===== 以下为实际执行脚本 =====
+        echo "🚀 HLY Action is running..."
+
+        # 读取输入参数（对应上方 inputs 区，由使用方 with: 传入）
+        MESSAGE="${{ inputs.message }}"
+        COUNT="${{ inputs.count }}"
+
+        # 演示逻辑：循环打印 COUNT 次 MESSAGE
+        for ((i=1; i<=COUNT; i++)); do
+          echo "[$i] $MESSAGE"
+        done
+
+        # 记录 UTC 时间戳（演示产出）
+        TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+        # 写入输出值：向 $GITHUB_OUTPUT 文件追加 "key=value" 行
+        # → 使上方 outputs 声明的 result / timestamp 真正获得值
+        echo "result=$MESSAGE (repeated $COUNT times)" >> $GITHUB_OUTPUT
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "✅ Action completed successfully"
