@@ -6,5 +6,5 @@
 # 【name】Action 名称（必填）
 # - 使用方在 workflow 中通过 uses: <owner>/<repo>@<tag> 引用本 Action
 # - 发布到 Marketplace 时做全局唯一校验：不得与已有 Action 名称 / 用户名 / 组织名重复
-name: 'HLY Test Action'
+name: 'TruffleHog OSS'
 
