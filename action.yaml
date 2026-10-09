@@ -21,9 +21,9 @@ author: 'Huliangyi'
 # - 发布时缺失仅产生告警（不阻断）；展示时以平台默认图标/颜色兜底
 branding:
   # 【icon】图标名：从平台预置图标列表中选择（如 zap、rocket、heart…）
-  icon: 'zap'
+  icon: 'zap123'
   # 【color】颜色名：从平台预置颜色列表中选择（如 blue、green、red…）
-  color: 'blue'
+  color: 'blue123'
 
 # 【inputs】输入参数区（可选）
 # - 使用方在 workflow 中通过 with: 传入；脚本内用 ${{ inputs.xxx }} 读取
